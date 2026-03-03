@@ -348,7 +348,7 @@ img {
 
 .sub-section__label {
   display: block;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 500;
   letter-spacing: 0.1em;
   color: var(--c-text-muted);
@@ -770,6 +770,17 @@ img {
 .footer__contact a:hover {
   opacity: 1;
 }
+.contact-item { white-space: nowrap; }
+.contact-sep { margin-inline: var(--sp-2); }
+
+@media (max-width: 480px) {
+  .footer__contact p {
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .contact-sep { display: none; }
+  .contact-item { display: flex; flex-direction: column; align-items: center; }
+}
 
 .footer__copy {
   margin-top: var(--sp-6);
@@ -1017,6 +1028,10 @@ body.high-contrast .btn--copy {
     max-width: 280px;
   }
 
+  .footer__logo {
+    max-width: 200px;
+  }
+
   .prose {
     font-size: var(--fs-base);
   }
@@ -1029,6 +1044,10 @@ body.high-contrast .btn--copy {
 @media (max-width: 374px) {
   .hero__logo {
     max-width: 220px;
+  }
+
+  .footer__logo {
+    max-width: 160px;
   }
 
   .profile-grid {
