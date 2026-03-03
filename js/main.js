@@ -200,35 +200,5 @@
   initScrollObserver();
 
 
-  /* -----------------------------------------
-     Gallery auto-scroll
-     ----------------------------------------- */
-  var galleryGrid = document.querySelector('.gallery-grid');
-  if (galleryGrid && galleryGrid.children.length > 1) {
-    var scrollIndex = 0;
-    var scrollItems = galleryGrid.children;
-    var autoScrollTimer = null;
-    var userScrolling = false;
-
-    function startAutoScroll() {
-      autoScrollTimer = setInterval(function () {
-        if (userScrolling) return;
-        scrollIndex = (scrollIndex + 1) % scrollItems.length;
-        var target = scrollItems[scrollIndex];
-        var offset = target.offsetLeft - (galleryGrid.offsetWidth - target.offsetWidth) / 2;
-        galleryGrid.scrollTo({ left: offset, behavior: 'smooth' });
-      }, 3000);
-    }
-
-    galleryGrid.addEventListener('touchstart', function () {
-      userScrolling = true;
-    });
-    galleryGrid.addEventListener('touchend', function () {
-      setTimeout(function () { userScrolling = false; }, 3000);
-    });
-
-    startAutoScroll();
-  }
-
 
 })();
