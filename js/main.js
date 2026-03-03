@@ -230,27 +230,5 @@
     startAutoScroll();
   }
 
-  /* -----------------------------------------
-     Kakao Map
-     ----------------------------------------- */
-  function initMap() {
-    var el = document.getElementById('map');
-    if (!el) return;
-
-    if (typeof kakao === 'undefined' || !kakao.maps) {
-      el.innerHTML =
-        '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px">' +
-        '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">' +
-        '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' +
-        '<span>지도를 불러오는 중입니다</span></div>';
-      return;
-    }
-
-    var center = new kakao.maps.LatLng(37.52686708651197, 126.91784487949172);
-    var map = new kakao.maps.Map(el, { center: center, level: 3 });
-    new kakao.maps.Marker({ position: center }).setMap(map);
-  }
-
-  setTimeout(initMap, 300);
 
 })();
