@@ -4,6 +4,18 @@
 (function () {
   'use strict';
 
+  var ua = navigator.userAgent || '';
+  var isKakaoWebView = /KAKAOTALK/i.test(ua);
+  var prefersReducedMotion = false;
+  if (window.matchMedia) {
+    prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+  var liteMotion = isKakaoWebView || prefersReducedMotion;
+  if (liteMotion) {
+    document.documentElement.classList.add('lite-motion');
+    document.body.classList.add('lite-motion');
+  }
+
   /* -----------------------------------------
      Typed animation (per-character reveal)
      ----------------------------------------- */
@@ -37,9 +49,13 @@
     step();
   }
 
-  function revealHeroContent() {
+  function revealHeroContent(immediate) {
     var reveals = document.querySelectorAll('.hero-reveal');
     reveals.forEach(function (el, i) {
+      if (immediate) {
+        el.classList.add('is-visible');
+        return;
+      }
       setTimeout(function () {
         el.classList.add('is-visible');
       }, i * 300);
@@ -50,15 +66,21 @@
   var line2 = document.getElementById('typed-line2');
 
   if (line1 && line2) {
-    var chars1 = splitToChars(line1);
-    var chars2 = splitToChars(line2);
+    if (liteMotion) {
+      revealHeroContent(true);
+    } else {
+      var chars1 = splitToChars(line1);
+      var chars2 = splitToChars(line2);
 
-    // 타이틀 fade-in 이후 타이핑 시작
-    setTimeout(function () {
-      revealChars(chars1, 100, function () {
-        revealChars(chars2, 100, revealHeroContent);
-      });
-    }, 1400);
+      // 타이틀 fade-in 이후 타이핑 시작
+      setTimeout(function () {
+        revealChars(chars1, 100, function () {
+          revealChars(chars2, 100, revealHeroContent);
+        });
+      }, 1400);
+    }
+  } else {
+    revealHeroContent(true);
   }
 
   /* -----------------------------------------
@@ -66,11 +88,17 @@
      ----------------------------------------- */
   function initPetals() {
     var container = document.getElementById('petals');
-    if (!container) return;
+    var hero = document.getElementById('hero');
+    if (!container || !hero || liteMotion) return;
+
+    var spawnTimer = null;
+    var heroVisible = false;
 
     function rand(min, max) { return min + Math.random() * (max - min); }
 
     function createPetal() {
+      if (!heroVisible) return;
+
       var petal = document.createElement('div');
       petal.className = 'petal';
 
@@ -99,13 +127,44 @@
       }, fallDur * 1000 + 200);
     }
 
-    // 초기 꽃잎 (시차 등장)
-    for (var i = 0; i < 10; i++) {
-      setTimeout(createPetal, i * 600);
+    function startPetals() {
+      if (spawnTimer) return;
+      heroVisible = true;
+
+      // 초기 꽃잎 (시차 등장)
+      for (var i = 0; i < 4; i++) {
+        setTimeout(createPetal, i * 350);
+      }
+
+      // 지속적으로 생성
+      spawnTimer = setInterval(createPetal, 1400);
     }
 
-    // 지속적으로 생성
-    setInterval(createPetal, 1000);
+    function stopPetals() {
+      heroVisible = false;
+      if (spawnTimer) {
+        clearInterval(spawnTimer);
+        spawnTimer = null;
+      }
+      container.innerHTML = '';
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      startPetals();
+      return;
+    }
+
+    var heroObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          startPetals();
+        } else {
+          stopPetals();
+        }
+      });
+    }, { threshold: 0.05 });
+
+    heroObserver.observe(hero);
   }
 
   initPetals();
@@ -185,6 +244,13 @@
     var targets = document.querySelectorAll('[data-aos]');
     if (!targets.length) return;
 
+    if (liteMotion || !('IntersectionObserver' in window)) {
+      targets.forEach(function (el) {
+        el.classList.add('is-visible');
+      });
+      return;
+    }
+
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -192,7 +258,7 @@
           io.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
 
     targets.forEach(function (el) { io.observe(el); });
   }
