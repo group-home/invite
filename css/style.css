@@ -339,6 +339,14 @@ img {
   margin-bottom: var(--sp-10);
 }
 
+.sub-section__venue {
+  font-size: var(--fs-lg);
+}
+
+.sub-section__address {
+  font-size: var(--fs-md);
+}
+
 .sub-section__title {
   font-size: var(--fs-lg);
   font-weight: 500;
