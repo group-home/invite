@@ -172,22 +172,22 @@
   /* -----------------------------------------
      Copy address + toast
      ----------------------------------------- */
-  var copyBtn = document.getElementById('copy-address');
+  var copyBtns = document.querySelectorAll('.copy-address-btn');
   var toast = document.getElementById('toast');
 
-  if (copyBtn) {
-    copyBtn.addEventListener('click', function () {
+  copyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
       var address = '서울시 영등포구 의사당대로 22 이룸센터';
       navigator.clipboard.writeText(address).then(function () {
         if (!toast) return;
-        toast.textContent = '주소를 복사했어요.';
+        toast.innerHTML = '<svg class="toast-check" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>주소를 복사했어요.';
         toast.classList.add('is-visible');
         setTimeout(function () {
           toast.classList.remove('is-visible');
         }, 2000);
       }).catch(function () {});
     });
-  }
+  });
 
   /* -----------------------------------------
      Accessibility: TTS (screen reader)
